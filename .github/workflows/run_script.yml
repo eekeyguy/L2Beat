@@ -3,6 +3,7 @@ name: Run Python Script
 on:
   schedule:
     - cron: '0 * * * *'  # Runs every hour, you can adjust the cron schedule as needed
+  workflow_dispatch:
 
 jobs:
   run-script:
