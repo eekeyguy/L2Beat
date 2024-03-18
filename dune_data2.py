@@ -29,7 +29,7 @@ dune_payload = json.dumps({
 })
 dune_headers = {
     'Content-Type': 'application/json',
-    'X-DUNE-API-KEY': 'BSka2d5Pb7N18wuCuxFo37RK5NTBAcKa'  # Replace with your actual Dune API key
+    'X-DUNE-API-KEY': 'VLoDOc56E5e57xwY2PC56MJKWHtOB1oM'  # Replace with your actual Dune API key
 }
 
 dune_response = requests.request("POST", dune_url, headers=dune_headers, data=dune_payload)
