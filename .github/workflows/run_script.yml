@@ -19,4 +19,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests  # Add any other dependencies your script requires
       - name: Run script
-        run: python dune_data.py  # Replace 'your_script.py' with the path to your Python script
+        run: python /dune_data.py  # Replace 'your_script.py' with the path to your Python script
