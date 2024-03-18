@@ -22,5 +22,5 @@ jobs:
         run: python dune_data.py
       - name: Run dune_data2.py
         run: python dune_data2.py
-     - name: Run dune_data_coins.py
+     - name:  Run dune_data_coins.py
         run: python dune_data_coins.py
