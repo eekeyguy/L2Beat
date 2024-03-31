@@ -24,3 +24,7 @@ jobs:
         run: python dune_data2.py
       - name: Run dune_data3.py
         run: python dune_data3.py
+      - name: Run dune_data4.py
+        run: python dune_data4.py
+      - name: Run dune_data5.py
+        run: python dune_data5.py
