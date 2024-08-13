@@ -5,17 +5,17 @@ from airstack.execute_query import AirstackClient
 api_client = AirstackClient(api_key="138959f866f104783a0ac885fc208eb78")
 
 query = """
-query MyQuery($cursor: String) {
+query MyQuery {
   FarcasterMoxieClaimDetails(
-    input: {filter: {fid: {}}, blockchain: ALL, order: {claimedAmount: DESC}, limit: 200, cursor: $cursor}
+    input: {filter: {fid: {}}, blockchain: ALL, order: {}, limit: 200, cursor: "NDAw"}
   ) {
     FarcasterMoxieClaimDetails {
-      claimedAmount
-      fid
+      availableClaimAmount
     }
     pageInfo {
       hasNextPage
       nextCursor
+      prevCursor
     }
   }
 }
@@ -55,7 +55,7 @@ async def main():
             break
 
         # Sum up claimedAmount for current page
-        page_total = sum(float(detail['claimedAmount']) for detail in page_data['FarcasterMoxieClaimDetails'])
+        page_total = sum(float(detail['availableClaimAmount']) for detail in page_data['FarcasterMoxieClaimDetails'])
         total_claimed_amount += page_total
         page_count += 1
 
@@ -63,7 +63,7 @@ async def main():
         has_next_page = page_data['pageInfo']['hasNextPage']
         cursor = page_data['pageInfo']['nextCursor'] if has_next_page else None
 
-    print(f"Total sum of all claimedAmount: {total_claimed_amount}")
+    print(f"Total sum of all availableClaimAmount: {total_claimed_amount}")
     print(f"Total pages processed: {page_count}")
 
 if __name__ == "__main__":
