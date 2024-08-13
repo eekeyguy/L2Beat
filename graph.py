@@ -11,13 +11,18 @@ query = """query MyQuery {
       availableClaimAmount
     }
   }
-}""" # Replace with GraphQL Query
+}"""
 
 async def main():
-    execute_query_client = api_client.create_execute_query_object(
-        query=query)
-
+    execute_query_client = api_client.create_execute_query_object(query=query)
     query_response = await execute_query_client.execute_query()
-    print(query_response.data)
+    
+    # Extract the list of dictionaries containing availableClaimAmount
+    claim_details = query_response.data['FarcasterMoxieClaimDetails']['FarcasterMoxieClaimDetails']
+    
+    # Calculate the sum of all availableClaimAmount values
+    total_claim_amount = sum(float(detail['availableClaimAmount']) for detail in claim_details)
+    
+    print(f"Sum of all availableClaimAmount: {total_claim_amount}")
 
 asyncio.run(main())
