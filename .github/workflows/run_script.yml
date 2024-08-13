@@ -17,12 +17,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests  # Add any other dependencies your script requires
-      - name: Run dune_data.py
-        run: python dune_data.py
-      - name: Run dune_data3.py
-        run: python dune_data3.py
-      - name: Run dune_data4.py
-        run: python dune_data4.py
-      - name: Run dune_data5.py
-        run: python dune_data5.py
+          pip install requests
+          pip install airstack # Add any other dependencies your script requires
+      - name: Run graph.py
+        run: python graph.py
+    
