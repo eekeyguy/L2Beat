@@ -43,7 +43,7 @@ async def main():
     cursor = ""
     total_claim_amount = 0
     page_count = 0
-    threshold = 100  # New threshold value
+    threshold = 50  # New threshold value
     
     while True:
         page_data = await fetch_page(cursor)
