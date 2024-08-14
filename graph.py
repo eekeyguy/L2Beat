@@ -9,10 +9,9 @@ api_client = AirstackClient(api_key=airstack_api_key)
 
 # Dune API configuration
 dune_api_key = "3gE1dURYhPgEeOWE9hF39PQCNoLCBkcd"
-dune_create_url = "https://api.dune.com/api/v1/table/create"
 dune_upload_url = "https://api.dune.com/api/v1/table/upload/csv"
 
-# Correct namespace
+# Correct namespace and table name
 namespace = "blockintel"
 table_name = "farcaster_moxie_claims"
 
@@ -52,37 +51,14 @@ async def fetch_page(cursor, retries=3):
     print("Failed to fetch page after all retries")
     return None
 
-def create_dune_table():
-    headers = {
-        "X-DUNE-API-KEY": dune_api_key,
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "namespace": namespace,
-        "table_name": table_name,
-        "description": "Farcaster Moxie claim amounts from Airstack API",
-        "schema": [
-            {"name": "date", "type": "timestamp"},
-            {"name": "claim_amount", "type": "double"}
-        ],
-        "is_private": False
-    }
-    response = requests.post(dune_create_url, json=payload, headers=headers)
-    if response.status_code == 200:
-        print("Table created successfully on Dune")
-        return True
-    else:
-        print(f"Failed to create table on Dune. Status code: {response.status_code}")
-        print(f"Response: {response.text}")
-        return False
-
-def upload_to_dune(csv_data):
+def upload_to_dune(unclaimed_amount):
     headers = {
         "X-DUNE-API-KEY": dune_api_key,
     }
     payload = {
         "table_name": f"{namespace}.{table_name}",
     }
+    csv_data = f"date,unclaimed_amount\n{datetime.now().isoformat()},{unclaimed_amount}"
     files = {
         "file": ("data.csv", csv_data, "text/csv")
     }
@@ -97,10 +73,8 @@ def upload_to_dune(csv_data):
 
 async def main():
     cursor = ""
-    total_claim_amount = 0
+    total_unclaimed_amount = 0
     page_count = 0
-    threshold = 50  # Threshold value
-    data_to_upload = []
     
     while True:
         page_data = await fetch_page(cursor)
@@ -115,35 +89,19 @@ async def main():
             print("No more data available. Stopping the process.")
             break
         
-        first_amount = float(page_data['FarcasterMoxieClaimDetails'][0]['availableClaimAmount'])
-        if first_amount < threshold:
-            print(f"First availableClaimAmount on page {page_count} is less than {threshold}. Stopping the process.")
-            break
-        
         for detail in page_data['FarcasterMoxieClaimDetails']:
             amount = float(detail['availableClaimAmount'])
-            if amount < threshold:
-                break
-            total_claim_amount += amount
-            data_to_upload.append(f"{datetime.now().isoformat()},{amount}")
+            total_unclaimed_amount += amount
         
         if not page_data['pageInfo']['hasNextPage']:
             break
         
         cursor = page_data['pageInfo']['nextCursor']
     
-    print(f"Total sum of availableClaimAmount (≥{threshold}) across {page_count} pages: {total_claim_amount}")
-    
-    # Create table on Dune
-    if not create_dune_table():
-        print("Aborting due to failure in table creation")
-        return
-
-    # Prepare data for Dune
-    csv_data = "date,claim_amount\n" + "\n".join(data_to_upload)
+    print(f"Total unclaimed amount across {page_count} pages: {total_unclaimed_amount}")
     
     # Upload to Dune
-    upload_to_dune(csv_data)
+    upload_to_dune(total_unclaimed_amount)
 
 if __name__ == "__main__":
     asyncio.run(main())
