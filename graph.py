@@ -14,7 +14,6 @@ query MyQuery($cursor: String) {
     pageInfo {
       hasNextPage
       nextCursor
-      prevCursor
     }
   }
 }
@@ -42,10 +41,10 @@ async def fetch_page(cursor, retries=3):
 
 async def main():
     cursor = ""
+    total_claim_amount = 0
     page_count = 0
-    max_pages = 2  # Set the maximum number of pages to process
     
-    while page_count < max_pages:
+    while True:
         page_data = await fetch_page(cursor)
         
         if page_data is None:
@@ -53,18 +52,16 @@ async def main():
             break
         
         page_count += 1
-        print(f"\nPage {page_count} - availableClaimAmount values:")
-        for detail in page_data['FarcasterMoxieClaimDetails']:
-            print(detail['availableClaimAmount'])
         
-        # Check if there's a next page
+        for detail in page_data['FarcasterMoxieClaimDetails']:
+            total_claim_amount += float(detail['availableClaimAmount'])
+        
         if not page_data['pageInfo']['hasNextPage']:
             break
         
         cursor = page_data['pageInfo']['nextCursor']
-        print(f"Next cursor: {cursor}")
     
-    print(f"\nTotal pages processed: {page_count}")
+    print(f"Total sum of availableClaimAmount across all {page_count} pages: {total_claim_amount}")
 
 if __name__ == "__main__":
     asyncio.run(main())
