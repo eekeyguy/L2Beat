@@ -12,6 +12,10 @@ dune_api_key = "3gE1dURYhPgEeOWE9hF39PQCNoLCBkcd"
 dune_create_url = "https://api.dune.com/api/v1/table/create"
 dune_upload_url = "https://api.dune.com/api/v1/table/upload/csv"
 
+# Correct namespace
+namespace = "blockintel"
+table_name = "farcaster_moxie_claims"
+
 query = """
 query MyQuery($cursor: String) {
   FarcasterMoxieClaimDetails(
@@ -54,8 +58,8 @@ def create_dune_table():
         "Content-Type": "application/json"
     }
     payload = {
-        "namespace": "myairstack",
-        "table_name": "farcaster_moxie_claims",
+        "namespace": namespace,
+        "table_name": table_name,
         "description": "Farcaster Moxie claim amounts from Airstack API",
         "schema": [
             {"name": "date", "type": "timestamp"},
@@ -77,7 +81,7 @@ def upload_to_dune(csv_data):
         "X-DUNE-API-KEY": dune_api_key,
     }
     payload = {
-        "table_name": "myairstack.farcaster_moxie_claims",
+        "table_name": f"{namespace}.{table_name}",
     }
     files = {
         "file": ("data.csv", csv_data, "text/csv")
