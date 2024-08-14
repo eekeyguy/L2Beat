@@ -84,7 +84,7 @@ async def main():
     })
     headers = {
         'Content-Type': 'application/json',
-        'X-DUNE-API-KEY': 'YOUR_DUNE_API_KEY_HERE'  # Replace with your actual Dune API key
+        'X-DUNE-API-KEY': 'SXeoX53Eo86VXSas2ohpHLq18waV5MCo'  # Replace with your actual Dune API key
     }
     dune_response = requests.post(dune_url, headers=headers, data=payload)
     print("Dune API Response:", dune_response.text)
