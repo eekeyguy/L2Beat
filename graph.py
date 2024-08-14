@@ -1,7 +1,15 @@
 import asyncio
+import requests
+from datetime import datetime
 from airstack.execute_query import AirstackClient
 
-api_client = AirstackClient(api_key="138959f866f104783a0ac885fc208eb78")
+# Airstack API configuration
+airstack_api_key = "138959f866f104783a0ac885fc208eb78"
+api_client = AirstackClient(api_key=airstack_api_key)
+
+# Dune API configuration
+dune_api_key = "3gE1dURYhPgEeOWE9hF39PQCNoLCBkcd"
+dune_url = "https://api.dune.com/api/v1/table/upload/csv"
 
 query = """
 query MyQuery($cursor: String) {
@@ -43,7 +51,8 @@ async def main():
     cursor = ""
     total_claim_amount = 0
     page_count = 0
-    threshold = 50  # New threshold value
+    threshold = 50  # Threshold value
+    data_to_upload = []
     
     while True:
         page_data = await fetch_page(cursor)
@@ -68,6 +77,7 @@ async def main():
             if amount < threshold:
                 break
             total_claim_amount += amount
+            data_to_upload.append(f"{datetime.now().isoformat()},{amount}")
         
         if not page_data['pageInfo']['hasNextPage']:
             break
@@ -75,6 +85,30 @@ async def main():
         cursor = page_data['pageInfo']['nextCursor']
     
     print(f"Total sum of availableClaimAmount (≥{threshold}) across {page_count} pages: {total_claim_amount}")
+    
+    # Prepare data for Dune
+    csv_data = "date,claim_amount\n" + "\n".join(data_to_upload)
+    
+    # Upload to Dune
+    headers = {
+        "X-DUNE-API-KEY": dune_api_key,
+        "Content-Type": "text/csv"
+    }
+    payload = {
+        "table_name": "farcaster_moxie_claims",
+        "description": "Farcaster Moxie claim amounts from Airstack API",
+    }
+    files = {
+        "data": ("data.csv", csv_data)
+    }
+    
+    response = requests.post(dune_url, headers=headers, data=payload, files=files)
+    
+    if response.status_code == 200:
+        print("Data successfully uploaded to Dune")
+    else:
+        print(f"Failed to upload data to Dune. Status code: {response.status_code}")
+        print(f"Response: {response.text}")
 
 if __name__ == "__main__":
     asyncio.run(main())
