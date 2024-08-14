@@ -6,7 +6,7 @@ api_client = AirstackClient(api_key="138959f866f104783a0ac885fc208eb78")
 query = """
 query MyQuery {
   FarcasterMoxieClaimDetails(
-    input: {filter: {fid: {}}, blockchain: ALL, order: {}, limit: 200, cursor: "NDAw"}
+    input: {filter: {fid: {}}, blockchain: ALL, order: {availableClaimAmount: DESC}, limit: 200, cursor: ""}
   ) {
     FarcasterMoxieClaimDetails {
       availableClaimAmount
