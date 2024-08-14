@@ -1,5 +1,4 @@
 import asyncio
-import time
 from airstack.execute_query import AirstackClient
 
 api_client = AirstackClient(api_key="138959f866f104783a0ac885fc208eb78")
@@ -42,7 +41,6 @@ async def fetch_page(cursor, retries=3):
     return None
 
 async def main():
-    total_claimed_amount = 0
     cursor = ""
     page_count = 0
     max_pages = 2  # Set the maximum number of pages to process
@@ -54,12 +52,10 @@ async def main():
             print("Encountered an error. Stopping the process.")
             break
 
-        # Sum up claimedAmount for current page
-        page_total = sum(float(detail['availableClaimAmount']) for detail in page_data['FarcasterMoxieClaimDetails'])
-        total_claimed_amount += page_total
         page_count += 1
-
-        print(f"Page {page_count} - Sum of availableClaimAmount: {page_total}")
+        print(f"\nPage {page_count} - availableClaimAmount values:")
+        for detail in page_data['FarcasterMoxieClaimDetails']:
+            print(detail['availableClaimAmount'])
 
         # Check if there's a next page
         if not page_data['pageInfo']['hasNextPage']:
@@ -67,8 +63,7 @@ async def main():
 
         cursor = page_data['pageInfo']['nextCursor']
 
-    print(f"\nTotal sum of availableClaimAmount for {page_count} pages: {total_claimed_amount}")
-    print(f"Total pages processed: {page_count}")
+    print(f"\nTotal pages processed: {page_count}")
 
 if __name__ == "__main__":
     asyncio.run(main())
