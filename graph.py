@@ -44,10 +44,10 @@ async def fetch_page(cursor, retries=3):
 async def main():
     total_claimed_amount = 0
     cursor = ""
-    has_next_page = True
     page_count = 0
+    max_pages = 2  # Set the maximum number of pages to process
 
-    while has_next_page:
+    while page_count < max_pages:
         page_data = await fetch_page(cursor)
         
         if page_data is None:
@@ -59,11 +59,15 @@ async def main():
         total_claimed_amount += page_total
         page_count += 1
 
-        # Update cursor and has_next_page for next iteration
-        has_next_page = page_data['pageInfo']['hasNextPage']
-        cursor = page_data['pageInfo']['nextCursor'] if has_next_page else None
+        print(f"Page {page_count} - Sum of availableClaimAmount: {page_total}")
 
-    print(f"Total sum of all availableClaimAmount: {total_claimed_amount}")
+        # Check if there's a next page
+        if not page_data['pageInfo']['hasNextPage']:
+            break
+
+        cursor = page_data['pageInfo']['nextCursor']
+
+    print(f"\nTotal sum of availableClaimAmount for {page_count} pages: {total_claimed_amount}")
     print(f"Total pages processed: {page_count}")
 
 if __name__ == "__main__":
