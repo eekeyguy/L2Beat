@@ -4,9 +4,9 @@ from airstack.execute_query import AirstackClient
 api_client = AirstackClient(api_key="138959f866f104783a0ac885fc208eb78")
 
 query = """
-query MyQuery {
+query MyQuery($cursor: String) {
   FarcasterMoxieClaimDetails(
-    input: {filter: {fid: {}}, blockchain: ALL, order: {availableClaimAmount: DESC}, limit: 200, cursor: ""}
+    input: {filter: {fid: {}}, blockchain: ALL, order: {availableClaimAmount: DESC}, limit: 200, cursor: $cursor}
   ) {
     FarcasterMoxieClaimDetails {
       availableClaimAmount
@@ -44,25 +44,26 @@ async def main():
     cursor = ""
     page_count = 0
     max_pages = 2  # Set the maximum number of pages to process
-
+    
     while page_count < max_pages:
         page_data = await fetch_page(cursor)
         
         if page_data is None:
             print("Encountered an error. Stopping the process.")
             break
-
+        
         page_count += 1
         print(f"\nPage {page_count} - availableClaimAmount values:")
         for detail in page_data['FarcasterMoxieClaimDetails']:
             print(detail['availableClaimAmount'])
-
+        
         # Check if there's a next page
         if not page_data['pageInfo']['hasNextPage']:
             break
-
+        
         cursor = page_data['pageInfo']['nextCursor']
-
+        print(f"Next cursor: {cursor}")
+    
     print(f"\nTotal pages processed: {page_count}")
 
 if __name__ == "__main__":
