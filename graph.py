@@ -53,15 +53,27 @@ async def main():
         
         page_count += 1
         
+        if not page_data['FarcasterMoxieClaimDetails']:
+            print("No more data available. Stopping the process.")
+            break
+        
+        first_amount = float(page_data['FarcasterMoxieClaimDetails'][0]['availableClaimAmount'])
+        if first_amount < 1:
+            print(f"First availableClaimAmount on page {page_count} is less than 1. Stopping the process.")
+            break
+        
         for detail in page_data['FarcasterMoxieClaimDetails']:
-            total_claim_amount += float(detail['availableClaimAmount'])
+            amount = float(detail['availableClaimAmount'])
+            if amount < 1:
+                break
+            total_claim_amount += amount
         
         if not page_data['pageInfo']['hasNextPage']:
             break
         
         cursor = page_data['pageInfo']['nextCursor']
     
-    print(f"Total sum of availableClaimAmount across all {page_count} pages: {total_claim_amount}")
+    print(f"Total sum of availableClaimAmount (≥1) across {page_count} pages: {total_claim_amount}")
 
 if __name__ == "__main__":
     asyncio.run(main())
