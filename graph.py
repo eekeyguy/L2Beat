@@ -41,7 +41,7 @@ async def fetch_page(cursor, retries=3):
 
 async def main():
     cursor = ""
-    threshold = 50  # Threshold value
+    threshold = 25  # Threshold value
     total_claim_amount = 0
     page_count = 0
 
