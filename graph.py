@@ -9,7 +9,8 @@ api_client = AirstackClient(api_key=airstack_api_key)
 
 # Dune API configuration
 dune_api_key = "3gE1dURYhPgEeOWE9hF39PQCNoLCBkcd"
-dune_url = "https://api.dune.com/api/v1/table/upload/csv"
+dune_create_url = "https://api.dune.com/api/v1/table/create"
+dune_upload_url = "https://api.dune.com/api/v1/table/upload/csv"
 
 query = """
 query MyQuery($cursor: String) {
@@ -46,6 +47,49 @@ async def fetch_page(cursor, retries=3):
     
     print("Failed to fetch page after all retries")
     return None
+
+def create_dune_table():
+    headers = {
+        "X-DUNE-API-KEY": dune_api_key,
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "namespace": "myairstack",
+        "table_name": "farcaster_moxie_claims",
+        "description": "Farcaster Moxie claim amounts from Airstack API",
+        "schema": [
+            {"name": "date", "type": "timestamp"},
+            {"name": "claim_amount", "type": "double"}
+        ],
+        "is_private": False
+    }
+    response = requests.post(dune_create_url, json=payload, headers=headers)
+    if response.status_code == 200:
+        print("Table created successfully on Dune")
+        return True
+    else:
+        print(f"Failed to create table on Dune. Status code: {response.status_code}")
+        print(f"Response: {response.text}")
+        return False
+
+def upload_to_dune(csv_data):
+    headers = {
+        "X-DUNE-API-KEY": dune_api_key,
+    }
+    payload = {
+        "table_name": "myairstack.farcaster_moxie_claims",
+    }
+    files = {
+        "file": ("data.csv", csv_data, "text/csv")
+    }
+    
+    response = requests.post(dune_upload_url, headers=headers, data=payload, files=files)
+    
+    if response.status_code == 200:
+        print("Data successfully uploaded to Dune")
+    else:
+        print(f"Failed to upload data to Dune. Status code: {response.status_code}")
+        print(f"Response: {response.text}")
 
 async def main():
     cursor = ""
@@ -86,29 +130,16 @@ async def main():
     
     print(f"Total sum of availableClaimAmount (≥{threshold}) across {page_count} pages: {total_claim_amount}")
     
+    # Create table on Dune
+    if not create_dune_table():
+        print("Aborting due to failure in table creation")
+        return
+
     # Prepare data for Dune
     csv_data = "date,claim_amount\n" + "\n".join(data_to_upload)
     
     # Upload to Dune
-    headers = {
-        "X-DUNE-API-KEY": dune_api_key,
-        "Content-Type": "text/csv"
-    }
-    payload = {
-        "table_name": "farcaster_moxie_claims",
-        "description": "Farcaster Moxie claim amounts from Airstack API",
-    }
-    files = {
-        "data": ("data.csv", csv_data)
-    }
-    
-    response = requests.post(dune_url, headers=headers, data=payload, files=files)
-    
-    if response.status_code == 200:
-        print("Data successfully uploaded to Dune")
-    else:
-        print(f"Failed to upload data to Dune. Status code: {response.status_code}")
-        print(f"Response: {response.text}")
+    upload_to_dune(csv_data)
 
 if __name__ == "__main__":
     asyncio.run(main())
