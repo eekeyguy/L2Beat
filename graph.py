@@ -43,6 +43,7 @@ async def main():
     cursor = ""
     total_claim_amount = 0
     page_count = 0
+    threshold = 100  # New threshold value
     
     while True:
         page_data = await fetch_page(cursor)
@@ -58,13 +59,13 @@ async def main():
             break
         
         first_amount = float(page_data['FarcasterMoxieClaimDetails'][0]['availableClaimAmount'])
-        if first_amount < 1:
-            print(f"First availableClaimAmount on page {page_count} is less than 1. Stopping the process.")
+        if first_amount < threshold:
+            print(f"First availableClaimAmount on page {page_count} is less than {threshold}. Stopping the process.")
             break
         
         for detail in page_data['FarcasterMoxieClaimDetails']:
             amount = float(detail['availableClaimAmount'])
-            if amount < 1:
+            if amount < threshold:
                 break
             total_claim_amount += amount
         
@@ -73,7 +74,7 @@ async def main():
         
         cursor = page_data['pageInfo']['nextCursor']
     
-    print(f"Total sum of availableClaimAmount (≥1) across {page_count} pages: {total_claim_amount}")
+    print(f"Total sum of availableClaimAmount (≥{threshold}) across {page_count} pages: {total_claim_amount}")
 
 if __name__ == "__main__":
     asyncio.run(main())
