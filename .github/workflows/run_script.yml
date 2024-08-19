@@ -25,6 +25,9 @@ jobs:
       
       - name: Run eigenlayer.py
         run: python eigenlayer.py
+        
+      - name: Run tokensupply.py
+        run: python tokensupply.py  
       
       - name: Run graphs.py
         run: python graph.py
