@@ -18,7 +18,7 @@ jobs:
           pip install requests
           pip install airstack
           pip install aiohttp --only-binary :all:
-      - name: Run graph.py
-        run: python graph.py
       - name: Run eigenlayer.py
         run: python eigenlayer.py
+      - name: Run graphs.py
+        run: python graph.py
