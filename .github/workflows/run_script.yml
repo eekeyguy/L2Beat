@@ -29,8 +29,11 @@ jobs:
       - name: Run tokensupply.py
         run: python tokensupply.py
 
-      - name: Run btcetf.py
-        run: python btcetf.py  
+      - name: Run 1YBTC_ETF.py
+        run: python 1YBTC_ETF.py  
+
+      - name: Run 30DBTC_ETF.py
+        run: python 30DBTC_ETF.py  
       
       - name: Run graphs.py
         run: python graph.py
