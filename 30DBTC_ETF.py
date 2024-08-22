@@ -42,7 +42,7 @@ def upload_to_dune(csv_data):
     })
     headers = {
         'Content-Type': 'application/json',
-        'X-DUNE-API-KEY': 'YOUR_DUNE_API_KEY_HERE'
+        'X-DUNE-API-KEY': 'p0RZJpTPCUn9Cn7UTXEWDhalc53QzZXV'
     }
     response = requests.post(dune_upload_url, headers=headers, data=payload)
     print(response.text)
