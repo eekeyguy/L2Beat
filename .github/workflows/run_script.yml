@@ -24,7 +24,7 @@ jobs:
           pip install aiohttp --only-binary :all:
       
       - name: Run eigenlayer.py
-        run: python eigenlayer.py
+        run: python eigenlayer.py    
         
       - name: Run tokensupply.py
         run: python tokensupply.py
@@ -34,6 +34,9 @@ jobs:
 
       - name: Run 30DBTC_ETF.py
         run: python 30DBTC_ETF.py  
+
+      - name: Run RealT.py
+        run: python RealT.py  
       
       - name: Run graphs.py
         run: python graph.py
