@@ -5,26 +5,24 @@ from io import StringIO
 from datetime import datetime
 
 def fetch_etf_netflow_data():
-    url = "https://api.coinmarketcap.com/data-api/v3/etf/detail/netflow?category=btc&range=all"
+    url = "https://api.coinmarketcap.com/data-api/v3/etf/overview/netflow?category=btc&range=all"
     response = requests.get(url)
     return response.json()
 
 def extract_netflow_data(json_data):
     extracted_data = []
-    for etf in json_data['data']['points']:
-        etf_name = etf['name']
-        for point in etf['data']:
-            timestamp = datetime.fromtimestamp(int(point['timestamp']) / 1000).strftime('%Y-%m-%d')
-            extracted_data.append({
-                'date': timestamp,
-                'etf_name': etf_name,
-                'net_flow': point['value']
-            })
+    points = json_data['data']['points']
+    for point in points:
+        timestamp = datetime.fromtimestamp(int(point['timestamp']) / 1000).strftime('%Y-%m-%d')
+        extracted_data.append({
+            'week_starting': timestamp,
+            'net_flow': point['value']
+        })
     return extracted_data
 
 def convert_to_csv(extracted_data):
     csv_file = StringIO()
-    fieldnames = ['date', 'etf_name', 'net_flow']
+    fieldnames = ['week_starting', 'net_flow']
     csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     csv_writer.writeheader()
     csv_writer.writerows(extracted_data)
@@ -36,8 +34,8 @@ def upload_to_dune(csv_data):
     dune_upload_url = "https://api.dune.com/api/v1/table/upload/csv"
     payload = json.dumps({
         "data": csv_data,
-        "description": "ETF Net Flow Data",
-        "table_name": "etf_net_flow",
+        "description": "All-time Weekly ETF Net Flow Data",
+        "table_name": "etf_net_flow_weekly",
         "is_private": False
     })
     headers = {
@@ -48,7 +46,7 @@ def upload_to_dune(csv_data):
     print(response.text)
 
 def main():
-    # Fetch ETF net flow data
+    # Fetch all-time ETF net flow data
     json_data = fetch_etf_netflow_data()
     
     # Extract net flow data
