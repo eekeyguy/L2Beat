@@ -23,6 +23,8 @@ def extract_token_data(json_data):
             'token_price': token['tokenPrice'],
             'currency': token['currency'],
             'ethereum_contract': token['ethereumContract'],
+            'xdai_contract': token['xDaiContract'],
+            'gnosis_contract': token['gnosisContract'],
             'last_update': token['lastUpdate']['date']
         })
     
@@ -30,7 +32,8 @@ def extract_token_data(json_data):
 
 def convert_to_csv(extracted_data):
     csv_file = StringIO()
-    fieldnames = ['date', 'full_name', 'short_name', 'symbol', 'product_type', 'token_price', 'currency', 'ethereum_contract', 'last_update']
+    fieldnames = ['date', 'full_name', 'short_name', 'symbol', 'product_type', 'token_price', 'currency', 
+                  'ethereum_contract', 'xdai_contract', 'gnosis_contract', 'last_update']
     csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
     csv_writer.writeheader()
     csv_writer.writerows(extracted_data)
