@@ -1,10 +1,8 @@
 name: Run Python Scripts Daily
-
 on:
   schedule:
     - cron: '0 5 * * *'  # Runs every day at 5:00 AM UTC
   workflow_dispatch:  # Allows manual triggering
-
 jobs:
   run-scripts:
     runs-on: ubuntu-latest
@@ -28,13 +26,13 @@ jobs:
         
       - name: Run tokensupply.py
         run: python tokensupply.py
-
+      
       - name: Run WeeklyBTC_ETF.py
         run: python WeeklyBTC_ETF.py 
-
+      
       - name: Run 30DBTC_ETF.py
         run: python 30DBTC_ETF.py  
-
+      
       - name: Run RealT.py
         run: python RealT.py  
       
