@@ -31,7 +31,10 @@ jobs:
         run: python WeeklyBTC_ETF.py 
       
       - name: Run 30DBTC_ETF.py
-        run: python 30DBTC_ETF.py  
+        run: python 30DBTC_ETF.py
+
+      - name: Run eth_supply.py
+        run: python eth_supply.py
       
       - name: Run RealT.py
         run: python RealT.py  
